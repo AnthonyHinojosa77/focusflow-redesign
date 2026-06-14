@@ -3,9 +3,14 @@
  * Design: Neon Terminal / Cyberpunk command center
  * Layout: Asymmetric — large timer left, panels stacked right
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Zap, History, BarChart3, Volume2 } from "lucide-react";
+import { Zap, History, BarChart3, Volume2, Keyboard } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NeonTimer from "@/components/NeonTimer";
 import TimerControls from "@/components/TimerControls";
@@ -30,6 +35,79 @@ export default function Home() {
   const timer = useTimer(onSessionComplete);
   const ambience = useAmbience();
 
+  // Show log when timer completes
+  const isCompleted = timer.status === "completed";
+
+  // Play/pause toggle that mirrors the main control button logic.
+  const togglePlayPause = useCallback(() => {
+    if (timer.status === "running") {
+      timer.pause();
+    } else if (timer.status === "paused") {
+      timer.resume();
+    } else if (timer.status === "completed") {
+      setShowLog(true);
+    } else {
+      timer.start();
+    }
+  }, [timer]);
+
+  // Keyboard shortcuts: Space (play/pause), R (reset).
+  // Ignored while typing in an input/textarea/contenteditable.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlayPause();
+      } else if (e.key === "r" || e.key === "R") {
+        if (e.metaKey || e.ctrlKey) return; // don't hijack browser reload
+        e.preventDefault();
+        timer.reset();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [togglePlayPause, timer]);
+
+  // Browser notification when a focus session completes. Permission is
+  // requested gracefully on first completion and we degrade silently if
+  // it's unavailable or denied.
+  useEffect(() => {
+    if (!isCompleted) return;
+    if (typeof Notification === "undefined") return;
+
+    const notify = () => {
+      if (Notification.permission !== "granted") return;
+      try {
+        new Notification("FocusFlow — session complete", {
+          body:
+            timer.phase === "focus"
+              ? "Nice work. Time for a break."
+              : "Break's over. Ready to focus?",
+          tag: "focusflow-session",
+        });
+      } catch {
+        // Some environments throw on the Notification constructor — ignore.
+      }
+    };
+
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then(notify).catch(() => {});
+    } else {
+      notify();
+    }
+  }, [isCompleted, timer.phase]);
+
   const handleLogComplete = (
     label: string,
     note: string,
@@ -50,9 +128,6 @@ export default function Home() {
   const handleSettingsChange = () => {
     setRefreshKey((k) => k + 1);
   };
-
-  // Show log when timer completes
-  const isCompleted = timer.status === "completed";
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -91,6 +166,39 @@ export default function Home() {
                   {timer.sessionsCompleted}
                 </span>
               </div>
+
+              {/* Keyboard shortcuts help */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Keyboard shortcuts"
+                    className="w-7 h-7 rounded-md border border-border/50 bg-card/50 flex items-center justify-center text-muted-foreground hover:text-neon-cyan hover:border-primary/30 transition-colors"
+                  >
+                    <Keyboard size={14} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  className="font-mono text-[11px] border-primary/30"
+                >
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">Play / Pause</span>
+                      <kbd className="px-1.5 py-0.5 rounded border border-border bg-background/60 text-neon-cyan">
+                        Space
+                      </kbd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-muted-foreground">Reset</span>
+                      <kbd className="px-1.5 py-0.5 rounded border border-border bg-background/60 text-neon-cyan">
+                        R
+                      </kbd>
+                    </div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+
               <SettingsPanel onSettingsChange={handleSettingsChange} />
             </div>
           </div>

@@ -11,7 +11,9 @@ A cyberpunk-themed Pomodoro timer and productivity companion built with React, T
 - **Session Journaling** — Log what you worked on after each session with mood tracking (1–5 scale), activity tags (Coding, Writing, Reading, Creative, Exercise, Deep Work), and quick notes
 - **Productivity Analytics** — Real-time stats dashboard with daily goal progress, streak counter, weekly focus chart (Recharts), and session history
 - **Customizable Settings** — Adjust focus/break durations, sessions before long break, daily goal, and auto-start preferences
-- **Matrix Rain Background** — Subtle animated canvas background with falling characters for that authentic cyberpunk atmosphere
+- **Keyboard Shortcuts** — `Space` to play/pause and `R` to reset, with an in-app shortcuts hint in the header
+- **Browser Notifications** — Optional Web Notification when a focus session ends (permission requested on first use; degrades silently if denied)
+- **Matrix Rain Background** — Subtle animated canvas background with falling characters for that authentic cyberpunk atmosphere. Respects `prefers-reduced-motion` (renders a static dim frame), throttles to ~24fps, and pauses while the tab is hidden to keep CPU usage low
 - **Scanline Overlay** — CRT-style scanline effect across the entire interface
 - **Local Storage Persistence** — All sessions, settings, and stats persist in the browser with no account required
 
@@ -103,13 +105,20 @@ client/
 5. **Review History** — Check past sessions in the "Log" tab
 6. **Customize** — Click the gear icon to adjust timer durations and daily goals
 
+### Keyboard Shortcuts
+
+| Key | Action |
+|---|---|
+| `Space` | Start / pause / resume the timer |
+| `R` | Reset the current phase |
+
+Shortcuts are ignored while typing in an input or textarea. A hint is also available via the keyboard icon in the header.
+
 ## Customization Ideas
 
 - **Add more soundscapes** — Drop new entries into `client/src/lib/ambience.ts` with any audio URL
 - **Custom color themes** — Modify the OKLCH values in `client/src/index.css` to create new color schemes
-- **Keyboard shortcuts** — Add `useEffect` listeners in `Home.tsx` for Space (play/pause), R (reset), etc.
 - **Export data** — Add a JSON export button in the settings panel to back up session history
-- **Browser notifications** — Use the Notifications API to alert when a session completes
 - **Spotify integration** — Replace the ambient sounds with Spotify playlist embeds
 
 ## License
