@@ -30,7 +30,8 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(true)}
-        className="w-9 h-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+        aria-label="Timer settings"
+        className="w-11 h-11 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
       >
         <Settings size={15} />
       </motion.button>
@@ -54,7 +55,8 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
             >
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+                aria-label="Close settings"
+                className="absolute top-2 right-2 w-11 h-11 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
               >
                 <X size={16} />
               </button>

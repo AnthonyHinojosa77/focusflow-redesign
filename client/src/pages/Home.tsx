@@ -23,6 +23,7 @@ import MatrixRain from "@/components/MatrixRain";
 import { useTimer } from "@/hooks/useTimer";
 import { useAmbience } from "@/hooks/useAmbience";
 import type { FocusSession } from "@/lib/store";
+import heroBg from "@/assets/hero-bg.webp";
 
 export default function Home() {
   const [showLog, setShowLog] = useState(false);
@@ -52,7 +53,9 @@ export default function Home() {
   }, [timer]);
 
   // Keyboard shortcuts: Space (play/pause), R (reset).
-  // Ignored while typing in an input/textarea/contenteditable.
+  // Ignored while typing in an input/textarea/contenteditable, and while
+  // focus is on an interactive control (button, select, link, ...) so a
+  // shortcut never double-fires with the control's own activation.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -60,7 +63,10 @@ export default function Home() {
         target &&
         (target.tagName === "INPUT" ||
           target.tagName === "TEXTAREA" ||
-          target.isContentEditable)
+          target.isContentEditable ||
+          target.closest(
+            'button, select, a, [role="button"], [role="switch"], [role="tab"], [role="slider"]'
+          ))
       ) {
         return;
       }
@@ -173,7 +179,7 @@ export default function Home() {
                   <button
                     type="button"
                     aria-label="Keyboard shortcuts"
-                    className="w-7 h-7 rounded-md border border-border/50 bg-card/50 flex items-center justify-center text-muted-foreground hover:text-neon-cyan hover:border-primary/30 transition-colors"
+                    className="w-11 h-11 rounded-md border border-border/50 bg-card/50 flex items-center justify-center text-muted-foreground hover:text-neon-cyan hover:border-primary/30 transition-colors"
                   >
                     <Keyboard size={14} />
                   </button>
@@ -213,16 +219,16 @@ export default function Home() {
               <div
                 className="absolute top-0 left-0 right-0 h-[500px] opacity-[0.04] bg-cover bg-center pointer-events-none"
                 style={{
-                  backgroundImage: `url(https://d2xsxph8kpxj0f.cloudfront.net/310519663140771997/nrNj8C9LJoShNEFPjt7DgA/focusflow-hero-bg-HvKcC8FoVgXEK4bwLTdb4A.webp)`,
+                  backgroundImage: `url(${heroBg})`,
                 }}
               />
 
-              {/* Timer */}
+              {/* Timer (scaled down on small screens so it fits 375px layouts) */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className="relative"
+                className="relative scale-90 sm:scale-100 origin-top -mb-8 sm:mb-0"
               >
                 <NeonTimer
                   timeRemaining={timer.timeRemaining}
@@ -273,7 +279,7 @@ export default function Home() {
             {/* Right: Panels */}
             <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0">
               <Tabs defaultValue="stats" className="w-full">
-                <TabsList className="w-full bg-card border border-border rounded-lg h-10 p-1 mb-4">
+                <TabsList className="w-full bg-card border border-border rounded-lg h-11 p-1 mb-4">
                   <TabsTrigger
                     value="stats"
                     className="flex-1 font-mono text-[11px] data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md"
@@ -306,6 +312,7 @@ export default function Home() {
                     currentId={ambience.currentId}
                     volume={ambience.volume}
                     isPlaying={ambience.isPlaying}
+                    loadError={ambience.loadError}
                     onSelect={ambience.playSound}
                     onVolumeChange={ambience.changeVolume}
                     onToggle={ambience.toggle}

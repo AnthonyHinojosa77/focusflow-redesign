@@ -83,7 +83,8 @@ export default function SessionLog({
           >
             <button
               onClick={onSkip}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+              aria-label="Close session log"
+              className="absolute top-2 right-2 w-11 h-11 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
             >
               <X size={16} />
             </button>
@@ -162,7 +163,7 @@ export default function SessionLog({
                       key={tag.id}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => toggleTag(tag.id)}
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border font-mono text-[11px] transition-all ${
+                      className={`flex items-center gap-1.5 px-2.5 py-2 rounded-md border font-mono text-[11px] transition-all ${
                         isSelected
                           ? "border-primary/50 bg-primary/10 text-primary"
                           : "border-border/50 text-muted-foreground hover:text-foreground hover:border-border"

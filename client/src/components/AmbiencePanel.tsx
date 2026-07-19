@@ -3,7 +3,7 @@
  * Design: Neon Terminal — glowing cards with atmospheric images
  */
 import { motion } from "framer-motion";
-import { Volume2, VolumeX } from "lucide-react";
+import { AlertTriangle, Volume2, VolumeX } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { AMBIENCE_OPTIONS } from "@/lib/ambience";
 
@@ -11,6 +11,7 @@ interface AmbiencePanelProps {
   currentId: string;
   volume: number;
   isPlaying: boolean;
+  loadError?: string | null;
   onSelect: (id: string) => void;
   onVolumeChange: (v: number) => void;
   onToggle: () => void;
@@ -20,6 +21,7 @@ export default function AmbiencePanel({
   currentId,
   volume,
   isPlaying,
+  loadError,
   onSelect,
   onVolumeChange,
 }: AmbiencePanelProps) {
@@ -43,6 +45,19 @@ export default function AmbiencePanel({
           </div>
         )}
       </div>
+
+      {/* Non-blocking notice when a soundscape fails to load */}
+      {loadError && (
+        <div
+          role="status"
+          className="flex items-start gap-2 rounded-md border border-neon-amber/30 bg-neon-amber/5 px-3 py-2"
+        >
+          <AlertTriangle size={12} className="text-neon-amber mt-0.5 shrink-0" />
+          <p className="font-mono text-[10px] leading-relaxed text-neon-amber/90">
+            {loadError}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2">
         {AMBIENCE_OPTIONS.map((option) => {
