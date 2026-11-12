@@ -42,10 +42,12 @@ A cyberpunk-themed Pomodoro timer and productivity companion built with React, T
 
 ### Installation
 
+On Anthony's Mac, create the disposable checkout with `~/.local/bin/agent-workspace new AnthonyHinojosa77/focusflow-redesign` and use the returned directory, following the managed agreement. For another host:
+
 ```bash
 # Clone the repository
-git clone https://github.com/AnthonyHinojosa77/focusflow.git
-cd focusflow
+git clone --depth 1 --single-branch --no-tags https://github.com/AnthonyHinojosa77/focusflow-redesign.git
+cd focusflow-redesign
 
 # Install dependencies
 pnpm install
